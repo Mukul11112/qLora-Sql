@@ -1,0 +1,58 @@
+[
+  {
+    "variant": "base",
+    "model_path": "models/qwen2.5-coder-7b-4bit",
+    "adapter_path": null,
+    "n_scored": 500,
+    "execution_accuracy": 0.766,
+    "valid_sql_rate": 0.976,
+    "ttft_p50_s": 1.3741921455075499,
+    "ttft_p95_s": 3.877047166984994,
+    "decode_tps_p50": 40.51471816526799,
+    "load_s": 1.6603178749792278,
+    "weights_gb": 4.287507464,
+    "peak_gb": 5.028317272
+  },
+  {
+    "variant": "checkpoint200",
+    "model_path": "models/qwen2.5-coder-7b-4bit",
+    "adapter_path": "tmp_adapter200",
+    "n_scored": 500,
+    "execution_accuracy": 0.76,
+    "valid_sql_rate": 0.97,
+    "ttft_p50_s": 1.4454391460167244,
+    "ttft_p95_s": 4.007577874988783,
+    "decode_tps_p50": 27.130687665167493,
+    "load_s": 1.9348932919674553,
+    "weights_gb": 4.28750972,
+    "peak_gb": 5.544572448
+  },
+  {
+    "variant": "checkpoint400",
+    "model_path": "models/qwen2.5-coder-7b-4bit",
+    "adapter_path": "tmp_adapter400",
+    "n_scored": 500,
+    "execution_accuracy": 0.786,
+    "valid_sql_rate": 0.96,
+    "ttft_p50_s": 1.4421113955031615,
+    "ttft_p95_s": 4.007607458974235,
+    "decode_tps_p50": 27.197582952526414,
+    "load_s": 1.8465887079946697,
+    "weights_gb": 4.28750972,
+    "peak_gb": 5.544654368
+  },
+  {
+    "variant": "final",
+    "model_path": "models/qwen2.5-coder-7b-4bit",
+    "adapter_path": "adapters_lr2e5_final",
+    "n_scored": 500,
+    "execution_accuracy": 0.786,
+    "valid_sql_rate": 0.96,
+    "ttft_p50_s": 1.4411662709899247,
+    "ttft_p95_s": 4.008033707970753,
+    "decode_tps_p50": 27.217070907986713,
+    "load_s": 1.804161042033229,
+    "weights_gb": 4.28750972,
+    "peak_gb": 5.54470352
+  }
+]

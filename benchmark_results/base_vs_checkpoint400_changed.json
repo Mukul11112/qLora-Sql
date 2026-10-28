@@ -1,0 +1,344 @@
+[
+  {
+    "question": "What language is predominantly spoken in Aruba?",
+    "db_id": "world_1",
+    "base_correct": true,
+    "checkpoint400_correct": false,
+    "gold_sql": "SELECT T2.Language FROM country AS T1 JOIN countrylanguage AS T2 ON T1.Code  =  T2.CountryCode WHERE T1.Name  =  \"Aruba\" ORDER BY Percentage DESC LIMIT 1",
+    "base_sql": "SELECT T2.Language FROM country AS T1 INNER JOIN countrylanguage AS T2 ON T1.Code = T2.CountryCode WHERE T1.Name = 'Aruba' ORDER BY T2.Percentage DESC LIMIT 1",
+    "checkpoint400_sql": "SELECT Language FROM countrylanguage WHERE CountryCode = (SELECT Code FROM country WHERE Name = 'Aruba') AND IsOfficial = 'T'"
+  },
+  {
+    "question": "How many people live in countries that do not speak English?",
+    "db_id": "world_1",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT sum(Population) FROM country WHERE Name NOT IN (SELECT T1.Name FROM country AS T1 JOIN countrylanguage AS T2 ON T1.Code  =  T2.CountryCode WHERE T2.Language  =  \"English\")",
+    "base_sql": "SELECT SUM(T1.Population) FROM country AS T1 LEFT JOIN countrylanguage AS T2 ON T1.Code = T2.CountryCode WHERE T2.Language != 'English'",
+    "checkpoint400_sql": "SELECT SUM(Population) FROM country WHERE Code NOT IN ( SELECT CountryCode FROM countrylanguage WHERE Language = 'English' )"
+  },
+  {
+    "question": "What is the model for the car with a weight smaller than the average?",
+    "db_id": "car_1",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT T1.model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.Weight  <  (SELECT avg(Weight) FROM CARS_DATA)",
+    "base_sql": "SELECT T1.Model FROM model_list AS T1 INNER JOIN car_names AS T2 ON T1.Model = T2.Model INNER JOIN cars_data AS T3 ON T2.MakeId = T3.Id WHERE T3.Weight < ( SELECT AVG(Weight) FROM cars_data )",
+    "checkpoint400_sql": "SELECT Model FROM car_names WHERE MakeId IN ( SELECT Id FROM cars_data WHERE Weight < ( SELECT AVG(Weight) FROM cars_data ) )"
+  },
+  {
+    "question": "What is the zip code for Port Chelsea?",
+    "db_id": "student_transcripts_tracking",
+    "base_correct": true,
+    "checkpoint400_correct": false,
+    "gold_sql": "SELECT zip_postcode FROM Addresses WHERE city  =  'Port Chelsea'",
+    "base_sql": "SELECT zip_postcode FROM Addresses WHERE city = 'Port Chelsea'",
+    "checkpoint400_sql": "SELECT zip_postcode FROM Addresses WHERE line_1 = 'Port Chelsea'"
+  },
+  {
+    "question": "Find the make and production time of the cars that were produced in the earliest year?",
+    "db_id": "car_1",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT T2.Make ,  T1.Year FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T1.Year  =  (SELECT min(YEAR) FROM CARS_DATA);",
+    "base_sql": "SELECT T1.Make, T2.Year FROM car_names AS T1 INNER JOIN cars_data AS T2 ON T1.MakeId = T2.Id ORDER BY T2.Year ASC LIMIT 1",
+    "checkpoint400_sql": "SELECT T1.Make, T2.Year FROM car_names AS T1 JOIN cars_data AS T2 ON T1.MakeId  =  T2.Id WHERE T2.Year  =  ( SELECT MIN(Year) FROM cars_data )"
+  },
+  {
+    "question": "What is the car model with the highest mpg ?",
+    "db_id": "car_1",
+    "base_correct": true,
+    "checkpoint400_correct": false,
+    "gold_sql": "select t1.model from car_names as t1 join cars_data as t2 on t1.makeid  =  t2.id order by t2.mpg desc limit 1;",
+    "base_sql": "SELECT T1.Model FROM model_list AS T1 INNER JOIN car_names AS T2 ON T1.Model = T2.Model INNER JOIN cars_data AS T3 ON T2.MakeId = T3.Id ORDER BY T3.MPG DESC LIMIT 1",
+    "checkpoint400_sql": "SELECT Model FROM car_names JOIN ( SELECT MakeId FROM cars_data ORDER BY CAST(REPLACE(MPG, ',', '') AS REAL) DESC LIMIT 1 ) AS highest_mpg ON car_names.MakeId = highest_mpg.MakeId"
+  },
+  {
+    "question": "List the names of the dogs of the rarest breed and the treatment dates of them.",
+    "db_id": "dog_kennels",
+    "base_correct": true,
+    "checkpoint400_correct": false,
+    "gold_sql": "SELECT T1.name ,  T2.date_of_treatment FROM Dogs AS T1 JOIN Treatments AS T2 ON T1.dog_id  =  T2.dog_id WHERE T1.breed_code  =  ( SELECT breed_code FROM Dogs GROUP BY breed_code ORDER BY count(*) ASC LIMIT 1 )",
+    "base_sql": "SELECT T1.name, T2.date_of_treatment FROM Dogs AS T1 INNER JOIN Treatments AS T2 ON T1.dog_id = T2.dog_id WHERE T1.breed_code = ( SELECT breed_code FROM Dogs GROUP BY breed_code ORDER BY count(*) ASC LIMIT 1 )",
+    "checkpoint400_sql": "SELECT d.name, t.date_of_treatment FROM Dogs d JOIN Treatments t ON d.dog_id = t.dog_id JOIN Breeds b ON d.breed_code = b.breed_code WHERE b.breed_name = (SELECT breed_name FROM Breeds GROUP BY breed_name ORDER BY count(*) ASC LIMIT 1)"
+  },
+  {
+    "question": "What are the names of the high schoolers and how many friends does each have?",
+    "db_id": "network_1",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT T2.name ,  count(*) FROM Friend AS T1 JOIN Highschooler AS T2 ON T1.student_id  =  T2.id GROUP BY T1.student_id",
+    "base_sql": "SELECT T1.name ,  count(*) FROM Highschooler AS T1 JOIN Friend AS T2 ON T1.ID  =  T2.student_id GROUP BY T1.name",
+    "checkpoint400_sql": "SELECT T1.name ,  count(*) FROM Highschooler AS T1 JOIN Friend AS T2 ON T1.id  =  T2.student_id GROUP BY T1.id"
+  },
+  {
+    "question": "What is the name of the visitor who visited both a museum opened before 2009 and a museum opened after 2011?",
+    "db_id": "museum_visit",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT t1.name FROM visitor AS t1 JOIN visit AS t2 ON t1.id  =  t2.visitor_id JOIN museum AS t3 ON t3.Museum_ID  =  t2.Museum_ID WHERE t3.open_year  <  2009 INTERSECT SELECT t1.name FROM visitor AS t1 JOIN visit AS t2 ON t1.id  =  t2.visitor_id JOIN museum AS t3 ON t3.Museum_ID  =  t2.Museum_ID WHERE t3.open_year  >  2011",
+    "base_sql": "SELECT T2.Name FROM visit AS T1 JOIN visitor AS T2 ON T1.visitor_ID = T2.ID WHERE T1.Museum_ID IN (SELECT Museum_ID FROM museum WHERE Open_Year < 2009) AND T1.Museum_ID IN (SELECT Museum_ID FROM museum WHERE Open_Year > 2011)",
+    "checkpoint400_sql": "SELECT v.Name FROM visitor v JOIN visit vi ON v.ID = vi.visitor_ID JOIN museum m ON vi.Museum_ID = m.Museum_ID WHERE m.Open_Year < 2009 INTERSECT SELECT v.Name FROM visitor v JOIN visit vi ON v.ID = vi.visitor_ID JOIN museum m ON vi.Museum_ID = m.Museum_ID WHERE m.Open_Year > 2011"
+  },
+  {
+    "question": "List all the student details in reversed lexicographical order.",
+    "db_id": "student_transcripts_tracking",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT other_student_details FROM Students ORDER BY other_student_details DESC",
+    "base_sql": "SELECT * FROM Students ORDER BY first_name DESC, middle_name DESC, last_name DESC",
+    "checkpoint400_sql": "SELECT other_student_details FROM Students ORDER BY other_student_details DESC"
+  },
+  {
+    "question": "What is the total number of people living in the nations that do not use English?",
+    "db_id": "world_1",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT sum(Population) FROM country WHERE Name NOT IN (SELECT T1.Name FROM country AS T1 JOIN countrylanguage AS T2 ON T1.Code  =  T2.CountryCode WHERE T2.Language  =  \"English\")",
+    "base_sql": "SELECT SUM(T1.Population) FROM country AS T1 LEFT JOIN countrylanguage AS T2 ON T1.Code = T2.CountryCode WHERE T2.Language != 'English'",
+    "checkpoint400_sql": "SELECT sum(Population) FROM country WHERE Code NOT IN ( SELECT CountryCode FROM countrylanguage WHERE Language = 'English' )"
+  },
+  {
+    "question": "List all cartoon directed by \"Ben Jones\".",
+    "db_id": "tvshow",
+    "base_correct": true,
+    "checkpoint400_correct": false,
+    "gold_sql": "SELECT Title FROM Cartoon WHERE Directed_by = \"Ben Jones\";",
+    "base_sql": "SELECT Title FROM Cartoon WHERE Directed_by = 'Ben Jones'",
+    "checkpoint400_sql": "SELECT * FROM Cartoon WHERE Directed_by = 'Ben Jones'"
+  },
+  {
+    "question": "Find the total number of tours for each ranking date.",
+    "db_id": "wta_1",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT sum(tours) ,  ranking_date FROM rankings GROUP BY ranking_date",
+    "base_sql": "SELECT ranking_date, COUNT(tours) FROM rankings GROUP BY ranking_date",
+    "checkpoint400_sql": "SELECT ranking_date ,  sum(tours) FROM rankings GROUP BY ranking_date"
+  },
+  {
+    "question": "Which dogs are of the rarest breed? Show their names and treatment dates.",
+    "db_id": "dog_kennels",
+    "base_correct": true,
+    "checkpoint400_correct": false,
+    "gold_sql": "SELECT T1.name ,  T2.date_of_treatment FROM Dogs AS T1 JOIN Treatments AS T2 ON T1.dog_id  =  T2.dog_id WHERE T1.breed_code  =  ( SELECT breed_code FROM Dogs GROUP BY breed_code ORDER BY count(*) ASC LIMIT 1 )",
+    "base_sql": "SELECT d.name, t.date_of_treatment FROM Dogs d JOIN Treatments t ON d.dog_id = t.dog_id WHERE d.breed_code = (SELECT breed_code FROM Dogs GROUP BY breed_code ORDER BY COUNT(*) ASC LIMIT 1)",
+    "checkpoint400_sql": "SELECT d.name, t.date_of_treatment FROM Dogs d JOIN Treatments t ON d.dog_id = t.dog_id JOIN Breeds b ON d.breed_code = b.breed_code WHERE b.breed_name = (SELECT breed_name FROM Breeds GROUP BY breed_name ORDER BY count(*) ASC LIMIT 1)"
+  },
+  {
+    "question": "What is the name of the high schooler who has the greatest number of friends?",
+    "db_id": "network_1",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT T2.name FROM Friend AS T1 JOIN Highschooler AS T2 ON T1.student_id  =  T2.id GROUP BY T1.student_id ORDER BY count(*) DESC LIMIT 1",
+    "base_sql": "SELECT T1.name FROM Highschooler AS T1 JOIN Friend AS T2 ON T1.ID  =  T2.student_id GROUP BY T1.name ORDER BY count(*) DESC LIMIT 1",
+    "checkpoint400_sql": "SELECT name FROM Highschooler WHERE id = (SELECT student_id FROM (SELECT student_id, count(*) as num_friends FROM Friend GROUP BY student_id) ORDER BY num_friends DESC LIMIT 1)"
+  },
+  {
+    "question": "What are the regions that use English or Dutch?",
+    "db_id": "world_1",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT DISTINCT T1.Region FROM country AS T1 JOIN countrylanguage AS T2 ON T1.Code  =  T2.CountryCode WHERE T2.Language  =  \"English\" OR T2.Language  =  \"Dutch\"",
+    "base_sql": "SELECT T1.Region FROM country AS T1 INNER JOIN countrylanguage AS T2 ON T1.Code = T2.CountryCode WHERE T2.Language = 'English' OR T2.Language = 'Dutch'",
+    "checkpoint400_sql": "SELECT DISTINCT T2.Region FROM countrylanguage AS T1 JOIN country AS T2 ON T1.CountryCode  =  T2.Code WHERE T1.Language  =  \"English\" OR T1.Language  =  \"Dutch\""
+  },
+  {
+    "question": "What is the abbreviation of the airilne has the fewest flights and what country is it in?",
+    "db_id": "flight_2",
+    "base_correct": true,
+    "checkpoint400_correct": false,
+    "gold_sql": "SELECT T1.Abbreviation ,  T1.Country FROM AIRLINES AS T1 JOIN FLIGHTS AS T2 ON T1.uid  =  T2.Airline GROUP BY T1.Airline ORDER BY count(*) LIMIT 1",
+    "base_sql": "SELECT T1.Abbreviation, T1.Country FROM airlines AS T1 JOIN flights AS T2 ON T1.uid = T2.Airline GROUP BY T1.Airline ORDER BY COUNT(*) ASC LIMIT 1",
+    "checkpoint400_sql": "SELECT T1.Abbreviation, T1.Country FROM airlines AS T1 JOIN ( SELECT Airline, count(*) as num FROM flights GROUP BY Airline ) AS T2 ON T1.uid  =  T2.Airline ORDER BY T2.num ASC LIMIT 1"
+  },
+  {
+    "question": "What are the names of all courses that have some students enrolled?",
+    "db_id": "student_transcripts_tracking",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT DISTINCT T1.course_name FROM Courses AS T1 JOIN Student_Enrolment_Courses AS T2 ON T1.course_id  =  T2.course_id",
+    "base_sql": "SELECT T1.course_name FROM Courses AS T1 INNER JOIN Student_Enrolment_Courses AS T2 ON T1.course_id = T2.course_id",
+    "checkpoint400_sql": "SELECT course_name FROM Courses WHERE course_id IN (SELECT course_id FROM Student_Enrolment_Courses)"
+  },
+  {
+    "question": "List the names of all winners who played in both 2013 and 2016.",
+    "db_id": "wta_1",
+    "base_correct": true,
+    "checkpoint400_correct": false,
+    "gold_sql": "SELECT winner_name FROM matches WHERE YEAR  =  2013 INTERSECT SELECT winner_name FROM matches WHERE YEAR  =  2016",
+    "base_sql": "SELECT DISTINCT T1.winner_name FROM matches AS T1 JOIN players AS T2 ON T1.winner_id = T2.player_id WHERE T1.year = 2013 INTERSECT SELECT DISTINCT T1.winner_name FROM matches AS T1 JOIN players AS T2 ON T1.winner_id = T2.player_id WHERE T1.year = 2016",
+    "checkpoint400_sql": "SELECT DISTINCT winner_name FROM matches WHERE year IN (2013, 2016)"
+  },
+  {
+    "question": "How many departments offer any degree?",
+    "db_id": "student_transcripts_tracking",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT count(DISTINCT department_id) FROM Degree_Programs",
+    "base_sql": "SELECT COUNT(department_id) FROM Degree_Programs",
+    "checkpoint400_sql": "SELECT count(DISTINCT department_id) FROM degree_programs"
+  },
+  {
+    "question": "Give the names of countries with English and French as official languages.",
+    "db_id": "world_1",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT T1.Name FROM country AS T1 JOIN countrylanguage AS T2 ON T1.Code  =  T2.CountryCode WHERE T2.Language  =  \"English\" AND T2.IsOfficial  =  \"T\" INTERSECT SELECT T1.Name FROM country AS T1 JOIN countrylanguage AS T2 ON T1.Code  =  T2.CountryCode WHERE T2.Language  =  \"French\" AND T2.IsOfficial  =  \"T\"",
+    "base_sql": "SELECT T1.Name FROM country AS T1 INNER JOIN countrylanguage AS T2 ON T1.Code = T2.CountryCode WHERE T2.Language = 'English' AND T2.IsOfficial = 'T' AND T2.Language = 'French' AND T2.IsOfficial = 'T'",
+    "checkpoint400_sql": "SELECT c.Name FROM country c JOIN countrylanguage cl ON c.Code = cl.CountryCode WHERE cl.Language = 'English' AND cl.IsOfficial = 'T' INTERSECT SELECT c.Name FROM country c JOIN countrylanguage cl ON c.Code = cl.CountryCode WHERE cl.Language = 'French' AND cl.IsOfficial = 'T'"
+  },
+  {
+    "question": "List the area codes in which voters voted both for the contestant 'Tabatha Gehling' and the contestant 'Kelly Clauss'.",
+    "db_id": "voter_1",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT T3.area_code FROM contestants AS T1 JOIN votes AS T2 ON T1.contestant_number  =  T2.contestant_number JOIN area_code_state AS T3 ON T2.state  =  T3.state WHERE T1.contestant_name  =  'Tabatha Gehling' INTERSECT SELECT T3.area_code FROM contestants AS T1 JOIN votes AS T2 ON T1.contestant_number  =  T2.contestant_number JOIN area_code_state AS T3 ON T2.state  =  T3.state WHERE T1.contestant_name  =  'Kelly Clauss'",
+    "base_sql": "SELECT T1.area_code FROM AREA_CODE_STATE AS T1 INNER JOIN CONTESTANTS AS T2 ON T2.contestant_number = T1.area_code INNER JOIN VOTES AS T3 ON T3.contestant_number = T2.contestant_number WHERE T2.contestant_name = 'Tabatha Gehling' INTERSECT SELECT T1.area_code FROM AREA_CODE_STATE AS T1 INNER JOIN CONTESTANTS AS T2 ON T2.contestant_number = T1.area_code INNER JOIN VOTES AS T3 ON T3.contestant_number = T2.contestant_number WHERE T2.contestant_name = 'Kelly Clauss'",
+    "checkpoint400_sql": "SELECT DISTINCT a.area_code FROM AREA_CODE_STATE a JOIN VOTES v ON a.state = v.state JOIN CONTESTANTS c ON v.contestant_number = c.contestant_number WHERE c.contestant_name = 'Tabatha Gehling' INTERSECT SELECT DISTINCT a.area_code FROM AREA_CODE_STATE a JOIN VOTES v ON a.state = v.state JOIN CONTESTANTS c ON v.contestant_number = c.contestant_number WHERE c.contestant_name = 'Kelly Clauss'"
+  },
+  {
+    "question": "How many people live in Asia, and what is the largest GNP among them?",
+    "db_id": "world_1",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT sum(Population) ,  max(GNP) FROM country WHERE Continent  =  \"Asia\"",
+    "base_sql": "SELECT SUM(T1.Population), MAX(T1.GNP) FROM country AS T1 INNER JOIN city AS T2 ON T1.Code = T2.CountryCode WHERE T1.Continent = 'Asia'",
+    "checkpoint400_sql": "SELECT sum(Population) ,  max(GNP) FROM country WHERE Continent  =  \"Asia\""
+  },
+  {
+    "question": "Show all document ids, names and the number of paragraphs in each document.",
+    "db_id": "cre_Doc_Template_Mgt",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT T1.document_id ,  T2.document_name ,  count(*) FROM Paragraphs AS T1 JOIN Documents AS T2 ON T1.document_id  =  T2.document_id GROUP BY T1.document_id",
+    "base_sql": "SELECT Documents.Document_ID, Documents.Document_Name, COUNT(Paragraphs.Paragraph_ID) AS Number_of_Paragraphs FROM Documents LEFT JOIN Paragraphs ON Documents.Document_ID = Paragraphs.Document_ID GROUP BY Documents.Document_ID, Documents.Document_Name",
+    "checkpoint400_sql": "SELECT d.Document_ID, d.Document_Name, COUNT(p.Paragraph_ID) AS Number_of_Paragraphs FROM Documents d JOIN Paragraphs p ON d.Document_ID = p.Document_ID GROUP BY d.Document_ID, d.Document_Name"
+  },
+  {
+    "question": "What are the countries having at least one car maker? List name and id.",
+    "db_id": "car_1",
+    "base_correct": true,
+    "checkpoint400_correct": false,
+    "gold_sql": "SELECT T1.CountryName ,  T1.CountryId FROM COUNTRIES AS T1 JOIN CAR_MAKERS AS T2 ON T1.CountryId  =  T2.Country GROUP BY T1.CountryId HAVING count(*)  >=  1;",
+    "base_sql": "SELECT T1.CountryName, T1.CountryId FROM countries AS T1 INNER JOIN car_makers AS T2 ON T1.CountryId = T2.Country GROUP BY T1.CountryName, T1.CountryId HAVING COUNT(T2.Maker) >= 1",
+    "checkpoint400_sql": "SELECT T2.CountryName, T2.CountryId FROM car_makers AS T1 JOIN countries AS T2 ON T1.Country = T2.CountryId"
+  },
+  {
+    "question": "For the cars with 4 cylinders, which model has the largest horsepower?",
+    "db_id": "car_1",
+    "base_correct": true,
+    "checkpoint400_correct": false,
+    "gold_sql": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.Cylinders  =  4 ORDER BY T2.horsepower DESC LIMIT 1;",
+    "base_sql": "SELECT T1.Model FROM model_list AS T1 INNER JOIN car_names AS T2 ON T1.Model = T2.Model INNER JOIN cars_data AS T3 ON T2.MakeId = T3.Id WHERE T3.Cylinders = 4 ORDER BY T3.Horsepower DESC LIMIT 1",
+    "checkpoint400_sql": "SELECT T2.Model FROM cars_data AS T1 JOIN car_names AS T2 ON T1.MakeId = T2.MakeId WHERE T1.Cylinders = 4 ORDER BY T1.Horsepower DESC LIMIT 1"
+  },
+  {
+    "question": "For all of the 4 cylinder cars, which model has the most horsepower?",
+    "db_id": "car_1",
+    "base_correct": true,
+    "checkpoint400_correct": false,
+    "gold_sql": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.Cylinders  =  4 ORDER BY T2.horsepower DESC LIMIT 1;",
+    "base_sql": "SELECT T1.Model FROM model_list AS T1 INNER JOIN car_names AS T2 ON T1.Model = T2.Model INNER JOIN cars_data AS T3 ON T2.MakeId = T3.Id WHERE T3.Cylinders = 4 ORDER BY T3.Horsepower DESC LIMIT 1",
+    "checkpoint400_sql": "SELECT T2.Model FROM cars_data AS T1 JOIN model_list AS T2 ON T1.Id  =  T2.ModelId WHERE T1.Cylinders  =  4 ORDER BY T1.Horsepower DESC LIMIT 1"
+  },
+  {
+    "question": "What are the names of high schoolers who have likes, and how many likes does each have?",
+    "db_id": "network_1",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT T2.name ,  count(*) FROM Likes AS T1 JOIN Highschooler AS T2 ON T1.student_id  =  T2.id GROUP BY T1.student_id",
+    "base_sql": "SELECT T1.name ,  count(*) FROM Highschooler AS T1 JOIN Likes AS T2 ON T1.ID  =  T2.student_id GROUP BY T1.name",
+    "checkpoint400_sql": "SELECT T2.name ,  count(*) FROM Likes AS T1 JOIN Highschooler AS T2 ON T1.student_id  =  T2.id GROUP BY T1.student_id"
+  },
+  {
+    "question": "What is name of the country that speaks the largest number of languages?",
+    "db_id": "world_1",
+    "base_correct": true,
+    "checkpoint400_correct": false,
+    "gold_sql": "SELECT T1.Name FROM country AS T1 JOIN countrylanguage AS T2 ON T1.Code  =  T2.CountryCode GROUP BY T1.Name ORDER BY COUNT(*) DESC LIMIT 1",
+    "base_sql": "SELECT T1.Name FROM country AS T1 JOIN countrylanguage AS T2 ON T1.Code = T2.CountryCode GROUP BY T1.Name ORDER BY COUNT(DISTINCT T2.Language) DESC LIMIT 1",
+    "checkpoint400_sql": "SELECT T1.Name FROM country AS T1 JOIN ( SELECT CountryCode FROM countrylanguage GROUP BY CountryCode ORDER BY COUNT(DISTINCT Language) DESC LIMIT 1 ) AS T2 ON T1.Code = T2.CountryCode"
+  },
+  {
+    "question": "What are all the possible breed type and size type combinations?",
+    "db_id": "dog_kennels",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT DISTINCT breed_code ,  size_code FROM dogs",
+    "base_sql": "SELECT DISTINCT breed_name, size_description FROM Breeds AS T1 INNER JOIN Sizes AS T2 ON T1.size_code = T2.size_code",
+    "checkpoint400_sql": "SELECT DISTINCT breed_code, size_code FROM Dogs"
+  },
+  {
+    "question": "Return the name of the high school student with the most friends.",
+    "db_id": "network_1",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT T2.name FROM Friend AS T1 JOIN Highschooler AS T2 ON T1.student_id  =  T2.id GROUP BY T1.student_id ORDER BY count(*) DESC LIMIT 1",
+    "base_sql": "SELECT T1.name FROM Highschooler AS T1 JOIN Friend AS T2 ON T1.ID  =  T2.student_id GROUP BY T1.name ORDER BY count(*) DESC LIMIT 1",
+    "checkpoint400_sql": "SELECT name FROM Highschooler WHERE id = (SELECT student_id FROM (SELECT student_id, count(*) as num_friends FROM Friend GROUP BY student_id) ORDER BY num_friends DESC LIMIT 1)"
+  },
+  {
+    "question": "List all singer names in concerts in year 2014.",
+    "db_id": "concert_singer",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT T2.name FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id JOIN concert AS T3 ON T1.concert_id  =  T3.concert_id WHERE T3.year  =  2014",
+    "base_sql": "SELECT T2.Name FROM concert AS T1 INNER JOIN singer AS T2 ON T1.concert_ID = T2.Singer_ID WHERE T1.Year = '2014'",
+    "checkpoint400_sql": "SELECT s.Name FROM singer s JOIN singer_in_concert sic ON s.Singer_ID  =  sic.Singer_ID JOIN concert c ON sic.concert_ID  =  c.concert_ID WHERE c.Year  =  2014"
+  },
+  {
+    "question": "What is the total number of unique official languages spoken in the countries that are founded before 1930?",
+    "db_id": "world_1",
+    "base_correct": true,
+    "checkpoint400_correct": false,
+    "gold_sql": "SELECT count(DISTINCT T2.Language) FROM country AS T1 JOIN countrylanguage AS T2 ON T1.Code  =  T2.CountryCode WHERE  IndepYear  <  1930 AND T2.IsOfficial  =  \"T\"",
+    "base_sql": "SELECT COUNT(DISTINCT T2.Language) FROM country AS T1 INNER JOIN countrylanguage AS T2 ON T1.Code = T2.CountryCode WHERE T1.IndepYear < 1930 AND T2.IsOfficial = 'T'",
+    "checkpoint400_sql": "SELECT count(DISTINCT Language) FROM countrylanguage WHERE CountryCode IN ( SELECT Code FROM country WHERE IndepYear < 1930 )"
+  },
+  {
+    "question": "Find the first name of students who have cat or dog pet.",
+    "db_id": "pets_1",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT DISTINCT T1.Fname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat' OR T3.pettype  =  'dog'",
+    "base_sql": "SELECT T1.Fname FROM Student AS T1 JOIN Has_Pet AS T2 ON T1.StuID = T2.StuID JOIN Pets AS T3 ON T2.PetID = T3.PetID WHERE T3.PetType = 'cat' OR T3.PetType = 'dog'",
+    "checkpoint400_sql": "SELECT DISTINCT T1.Fname FROM Student AS T1 JOIN Has_Pet AS T2 ON T1.StuID  =  T2.StuID JOIN Pets AS T3 ON T2.PetID  =  T3.PetID WHERE T3.PetType  =  \"cat\" OR T3.PetType  =  \"dog\""
+  },
+  {
+    "question": "What is the average life expectancy in African countries that are republics?",
+    "db_id": "world_1",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT avg(LifeExpectancy) FROM country WHERE Continent  =  \"Africa\" AND GovernmentForm  =  \"Republic\"",
+    "base_sql": "SELECT AVG(T1.LifeExpectancy) FROM country AS T1 INNER JOIN countrylanguage AS T2 ON T1.Code = T2.CountryCode WHERE T1.Continent = 'Africa' AND T1.GovernmentForm = 'Republic'",
+    "checkpoint400_sql": "SELECT AVG(LifeExpectancy) FROM country WHERE Continent = 'Africa' AND GovernmentForm = 'Republic'"
+  },
+  {
+    "question": "What languages are only used by a single country with a republic government?",
+    "db_id": "world_1",
+    "base_correct": true,
+    "checkpoint400_correct": false,
+    "gold_sql": "SELECT T2.Language FROM country AS T1 JOIN countrylanguage AS T2 ON T1.Code  =  T2.CountryCode WHERE T1.GovernmentForm  =  \"Republic\" GROUP BY T2.Language HAVING COUNT(*)  =  1",
+    "base_sql": "SELECT T2.Language FROM country AS T1 INNER JOIN countrylanguage AS T2 ON T1.Code = T2.CountryCode WHERE T1.GovernmentForm = 'Republic' GROUP BY T2.Language HAVING COUNT(T2.Language) = 1",
+    "checkpoint400_sql": "SELECT Language FROM countrylanguage WHERE CountryCode IN (SELECT Code FROM country WHERE GovernmentForm = 'Republic' GROUP BY Code HAVING count(*) = 1)"
+  },
+  {
+    "question": "What is the number of car models created by the car maker American Motor Company?",
+    "db_id": "car_1",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT count(*) FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker WHERE T1.FullName  =  'American Motor Company';",
+    "base_sql": "SELECT COUNT(*) FROM model_list AS T1 INNER JOIN car_makers AS T2 ON T1.Maker = T2.Id WHERE T2.Maker = 'American Motor Company'",
+    "checkpoint400_sql": "SELECT count(*) FROM model_list WHERE Maker  =  1"
+  },
+  {
+    "question": "What the smallest version number and its template type code?",
+    "db_id": "cre_Doc_Template_Mgt",
+    "base_correct": false,
+    "checkpoint400_correct": true,
+    "gold_sql": "SELECT min(Version_Number) ,  template_type_code FROM Templates",
+    "base_sql": "SELECT MIN(Version_Number), Template_Type_Code FROM Templates GROUP BY Template_Type_Code",
+    "checkpoint400_sql": "SELECT MIN(Version_Number), Template_Type_Code FROM Templates"
+  }
+]

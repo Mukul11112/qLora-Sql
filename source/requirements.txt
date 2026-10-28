@@ -1,0 +1,6 @@
+# Apple Silicon only (arm64 macOS). MLX will not install on x86.
+mlx>=0.29.0
+mlx-lm[train]>=0.28.0
+
+# Benchmarking and data prep use the stdlib (sqlite3, json) plus:
+huggingface_hub>=0.34.0     # for downloading the base model

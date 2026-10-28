@@ -1,0 +1,38 @@
+# QLoRA on Qwen2.5-Coder-7B-Instruct, tuned for an M3 Pro with 18 GB unified memory.
+# `model` points at a 4-bit checkpoint: mlx-lm detects the quantised base and
+# trains QLoRA (adapters in bf16 over frozen 4-bit weights) automatically.
+
+model: "models/qwen2.5-coder-7b-4bit"
+train: true
+data: "data_final"
+
+fine_tune_type: lora
+mask_prompt: true          # loss on the SQL only, not on the schema text
+
+# 18 GB is shared with the OS and display. Keep the live set small.
+num_layers: 16
+batch_size: 1
+grad_accumulation_steps: 8 # effective batch 8 without the memory cost
+max_seq_length: 1280
+grad_checkpoint: true
+
+iters: 400
+learning_rate: 2e-5
+lr_schedule:
+  name: cosine_decay
+  warmup: 60
+  arguments: [2e-5, 400, 1e-6]
+
+lora_parameters:
+  rank: 16
+  scale: 20
+  dropout: 0.05
+  keys: ["self_attn.q_proj", "self_attn.k_proj", "self_attn.v_proj",
+         "self_attn.o_proj", "mlp.gate_proj", "mlp.up_proj", "mlp.down_proj"]
+
+adapter_path: "adapters_lr2e5_final"
+save_every: 200
+steps_per_report: 20
+steps_per_eval: 200
+val_batches: 25
+seed: 0

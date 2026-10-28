@@ -1,0 +1,59 @@
+{
+    "adapter_path": "adapters_lr2e5_final",
+    "batch_size": 1,
+    "clear_cache_threshold": 0,
+    "config": "configs/qlora_m3pro_clean.yaml",
+    "data": "data_final",
+    "fine_tune_type": "lora",
+    "grad_accumulation_steps": 8,
+    "grad_checkpoint": true,
+    "iters": 400,
+    "learning_rate": 2e-05,
+    "lora_parameters": {
+        "rank": 16,
+        "scale": 20,
+        "dropout": 0.05,
+        "keys": [
+            "self_attn.q_proj",
+            "self_attn.k_proj",
+            "self_attn.v_proj",
+            "self_attn.o_proj",
+            "mlp.gate_proj",
+            "mlp.up_proj",
+            "mlp.down_proj"
+        ]
+    },
+    "lr_schedule": {
+        "name": "cosine_decay",
+        "warmup": 60,
+        "arguments": [
+            2e-05,
+            400,
+            1e-06
+        ]
+    },
+    "mask_prompt": true,
+    "max_seq_length": 1280,
+    "model": "models/qwen2.5-coder-7b-4bit",
+    "num_layers": 16,
+    "optimizer": "adam",
+    "optimizer_config": {
+        "adam": {},
+        "adamw": {},
+        "muon": {},
+        "sgd": {},
+        "adafactor": {}
+    },
+    "project_name": null,
+    "report_to": null,
+    "resume_adapter_file": null,
+    "save_every": 200,
+    "seed": 0,
+    "steps_per_eval": 200,
+    "steps_per_report": 20,
+    "test": false,
+    "test_batches": 500,
+    "train": true,
+    "trust_remote_code": false,
+    "val_batches": 25
+}
